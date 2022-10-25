@@ -32,8 +32,13 @@ class ED
             @current_line = @buffer.length - 1
         end
 
-        # 入力を受け付ける
-        _read
+        loop {
+            # コマンドを読み込み、実行する
+            _eval(_read())
+
+            # 実行中に配列表現等で複数回printする必要があるため、ここで呼び出すことはしない。
+            # _print()
+        }
     end
 
     def _read
@@ -88,7 +93,7 @@ class ED
             when 'q'
                 # アドレスがどちらかにも指定されていない場合は終了する
                 if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
-                    return
+                    exit(0)
                 else
                     _error
                 end
@@ -104,9 +109,6 @@ class ED
                 _error()
 
             end
-
-        # 読み込みを続ける
-        _read
     end
 
     def _print(str)
