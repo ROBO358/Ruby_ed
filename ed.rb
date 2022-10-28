@@ -41,18 +41,15 @@ class ED
         }
     end
 
-    def _read
+    private def _read
         # promptを表示
         print @prompt
 
         # 入力を受け付ける
-        input = $stdin.gets
-
-        # 入力を評価する
-        _eval(input)
+        return $stdin.gets
     end
 
-    def _eval(input)
+    private def _eval(input)
         # 名前付きキャプチャのローカル変数への代入は式展開が存在すると仕様上行えないため、式展開を使用しない
         # addr = '(?:\d+|[.$,;]|\/.*\/)'
         # cmnd = '(?:wq|[acdgijnpqrw=]|\z)'
@@ -111,16 +108,17 @@ class ED
             end
     end
 
-    def _print(str)
+    private def _print(str)
         print str if !(str.nil? || str.empty?)
     end
 
-    def _error
+    private def _error(err = nil)
         _print("?\n")
+        _print(err.to_s + "\n") if !(err.nil? || err.empty?)
     end
 
     # アドレスの有効性を検証
-    def address_verification(addr_from, addr_to)
+    private def address_verification(addr_from, addr_to)
         # 初期値(値には全範囲を指定)
         from_idx = 0
         to_idx = @buffer.length - 1
@@ -166,7 +164,7 @@ class ED
     end
 
     # `@buffer`の内容を出力する
-    def print_buffer(addr_from, addr_to, number_flg = false)
+    private def print_buffer(addr_from, addr_to, number_flg = false)
         # アドレスの検証
         _err, from_idx, to_idx = address_verification(addr_from, addr_to)
         if _err
@@ -186,7 +184,7 @@ class ED
     end
 
     # `@buffer`の内容を削除する
-    def delete_buffer(addr_from, addr_to)
+    private def delete_buffer(addr_from, addr_to)
         # アドレスの検証
         _err, from_idx, to_idx = address_verification(addr_from, addr_to)
         if _err
@@ -202,7 +200,7 @@ class ED
     end
 
     # カレント行を更新する
-    def update_current_line(addr_from, addr_to)
+    private def update_current_line(addr_from, addr_to)
         # アドレスの検証
         _err, from_idx, to_idx = address_verification(addr_from, addr_to)
         if _err
