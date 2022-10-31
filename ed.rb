@@ -5,9 +5,14 @@ require 'optparse'
 # メジャーバージョン: 互換性のない変更(APIの変更など)
 # マイナーバージョン: 互換性のある新機能の追加(新しい機能の追加)
 # パッチバージョン: 互換性のあるバグ修正
-Version = '0.1.2'
+Version = '0.2.0'
+
+# 実装済みのコマンド
+# コマンド名 => メソッド名(_コマンド名)
+Command = ['a', 'c', 'd', 'f', 'i', 'j', 'n', 'p', 'q', 'w', 'wq', '=']
 
 class ED
+    # クラス呼び出し時
     def initialize
         # 変数初期化
         @buffer = []
@@ -41,6 +46,9 @@ class ED
         }
     end
 
+    ##############################REP###########################
+
+    # Read
     private def _read
         # promptを表示
         print @prompt
@@ -49,6 +57,7 @@ class ED
         return $stdin.gets
     end
 
+    # Eval
     private def _eval(input)
         # 名前付きキャプチャのローカル変数への代入は式展開が存在すると仕様上行えないため、式展開を使用しない
         # addr = '(?:\d+|[.$,;]|\/.*\/)'
@@ -67,55 +76,75 @@ class ED
         p cmnd
         p prmt
 
-        case cmnd
-            when 'a'
-            when 'c'
+        # コマンドが指定されていない場合
+        if cmnd == ' ' || cmnd == '' || cmnd == nil
+            # 空行の場合、現在行を更新する
+            update_current_line(addr_from, addr_to)
 
-            # 行削除
-            when 'd'
-                delete_buffer(addr_from, addr_to)
+        # 存在しないコマンドを呼び出さないように(インジェクションされそうなので)
+        elsif Command.include?(cmnd)
+            # コマンドの実行
+            self.send("_#{cmnd}", addr_from, addr_to, prmt)
 
-            when 'f'
-            when 'i'
-            when 'j'
+        # 定義されていない場合
+        else
+            # 未定義のコマンド
+            _error()
+        end
 
-            # 行番号ありで出力
-            when 'n'
-                print_buffer(addr_from, addr_to, true)
-
-            # 出力
-            when 'p'
-                print_buffer(addr_from, addr_to)
-
-            when 'q'
-                # アドレスがどちらかにも指定されていない場合は終了する
-                if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
-                    exit(0)
-                else
-                    _error
-                end
-
-            when 'w'
-            when 'wq'
-            when '='
-
-            when '', ' ', nil
-                update_current_line(addr_from, addr_to)
-
-            else
-                _error()
-
-            end
     end
 
+    # Print
     private def _print(str)
         print str if !(str.nil? || str.empty?)
     end
 
+    # Error
     private def _error(err = nil)
         _print("?\n")
         _print(err.to_s + "\n") if !(err.nil? || err.empty?)
     end
+
+    #####################各コマンドの実装########################
+
+    # 行削除
+    # `@buffer`の内容を削除する
+    private def _d(addr_from, addr_to, prompt)
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # `from_idx`から`to_idx`までの要素を削除
+        @buffer.slice!(from_idx..to_idx)
+
+        # 現在の行を更新
+        @current_line = @buffer.length - (to_idx - from_idx) - 1
+    end
+
+    # 行番号ありで出力
+    private def _n(addr_from, addr_to, prompt)
+        print_buffer(addr_from, addr_to, true)
+    end
+
+    # 行番号なしで出力
+    private def _p(addr_from, addr_to, prompt)
+        print_buffer(addr_from, addr_to)
+    end
+
+    # 終了
+    private def _q(addr_from, addr_to, prompt)
+        # アドレスがどちらかにも指定されていない場合は終了する
+        if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
+            exit(0)
+        else
+            _error
+        end
+    end
+
+    #############################その他##########################
 
     # アドレスの有効性を検証
     private def address_verification(addr_from, addr_to)
@@ -181,22 +210,6 @@ class ED
 
         # 現在の行を更新
         @current_line = to_idx
-    end
-
-    # `@buffer`の内容を削除する
-    private def delete_buffer(addr_from, addr_to)
-        # アドレスの検証
-        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
-        if _err
-            _error()
-            return
-        end
-
-        # `from_idx`から`to_idx`までの要素を削除
-        @buffer.slice!(from_idx..to_idx)
-
-        # 現在の行を更新
-        @current_line = @buffer.length - (to_idx - from_idx) - 1
     end
 
     # カレント行を更新する
