@@ -5,7 +5,7 @@ require 'optparse'
 # メジャーバージョン: 互換性のない変更(APIの変更など)
 # マイナーバージョン: 互換性のある新機能の追加(新しい機能の追加)
 # パッチバージョン: 互換性のあるバグ修正
-Version = '0.2.0'
+Version = '0.3.0'
 
 # 実装済みのコマンド
 # コマンド名 => メソッド名(_コマンド名)
@@ -106,6 +106,31 @@ class ED
     end
 
     #####################各コマンドの実装########################
+
+    # 後挿入
+    private def _a(addr_from, addr_to, prmt)
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        loop{
+            # 人間は1行目が1行目であると思っているので、予め人間に寄り添う
+            to_idx += 1
+
+            # 入力を受け付ける
+            input = $stdin.gets
+
+            # 入力を終了する場合
+            break if input == ".\n"
+
+            # 入力を挿入
+            @buffer.insert(to_idx, input)
+        }
+
+    end
 
     # 行削除
     # `@buffer`の内容を削除する
