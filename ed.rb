@@ -5,7 +5,7 @@ require 'optparse'
 # メジャーバージョン: 互換性のない変更(APIの変更など)
 # マイナーバージョン: 互換性のある新機能の追加(新しい機能の追加)
 # パッチバージョン: 互換性のあるバグ修正
-Version = '0.4.1'
+Version = '0.5.0'
 
 # 実装済みのコマンド
 # コマンド名 => メソッド名(_コマンド名)
@@ -136,6 +136,21 @@ class ED
             @current_line += 1
         }
 
+    end
+
+    # 変更
+    private def _c(addr_from, addr_to, prmt)
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # `from_idx`から`to_idx`までの要素を削除
+        @buffer.slice!(from_idx..to_idx)
+
+        _a((from_idx).to_s, (from_idx).to_s, prmt)
     end
 
     # 行削除
