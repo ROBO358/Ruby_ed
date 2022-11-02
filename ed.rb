@@ -5,7 +5,7 @@ require 'optparse'
 # メジャーバージョン: 互換性のない変更(APIの変更など)
 # マイナーバージョン: 互換性のある新機能の追加(新しい機能の追加)
 # パッチバージョン: 互換性のあるバグ修正
-Version = '0.3.0'
+Version = '0.4.0'
 
 # 実装済みのコマンド
 # コマンド名 => メソッド名(_コマンド名)
@@ -182,6 +182,11 @@ class ED
         # 人間は1から数えているため、人間のフリをしている
         addr_from = (@current_line.to_i+1).to_s if addr_from == '.'
         addr_to = (@current_line.to_i+1).to_s if addr_to == '.'
+
+        # アドレスが`$`と指定されている場合は最終行を指定
+        # 人間は1から数えているため、人間のフリをしている
+        addr_from = (@buffer.length.to_i).to_s if addr_from == '$'
+        addr_to = (@buffer.length.to_i).to_s if addr_to == '$'
 
         # どちらもアドレス指定がなければエラー
         if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
