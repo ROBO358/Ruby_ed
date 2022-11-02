@@ -5,7 +5,7 @@ require 'optparse'
 # メジャーバージョン: 互換性のない変更(APIの変更など)
 # マイナーバージョン: 互換性のある新機能の追加(新しい機能の追加)
 # パッチバージョン: 互換性のあるバグ修正
-Version = '0.4.0'
+Version = '0.4.1'
 
 # 実装済みのコマンド
 # コマンド名 => メソッド名(_コマンド名)
@@ -16,7 +16,7 @@ class ED
     def initialize
         # 変数初期化
         @buffer = []
-        @current_line = @buffer.length - 1
+        @current_line = 0 # zero-based
         @file_name = nil
         @quit = false
         @prompt = ''
@@ -34,7 +34,7 @@ class ED
         if ARGV.length > 0
             @file_name = ARGF.filename
             @buffer = ARGF.readlines
-            @current_line = @buffer.length - 1
+            @current_line = @buffer.length - 1 # zero-based
         end
 
         loop {
@@ -116,6 +116,9 @@ class ED
             return
         end
 
+        # カレント行は入力する一つ前の行とする
+        @current_line = to_idx.to_i # zero-based
+
         loop{
             # 人間は1行目が1行目であると思っているので、予め人間に寄り添う
             to_idx += 1
@@ -128,6 +131,9 @@ class ED
 
             # 入力を挿入
             @buffer.insert(to_idx, input)
+
+            # 現在行を更新
+            @current_line += 1
         }
 
     end
@@ -172,6 +178,7 @@ class ED
     #############################その他##########################
 
     # アドレスの有効性を検証
+    # 戻り値はZero-based
     private def address_verification(addr_from, addr_to)
         # 初期値(値には全範囲を指定)
         from_idx = 0
