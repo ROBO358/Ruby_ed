@@ -111,7 +111,7 @@ class ED
     private def _a(addr_from, addr_to, prmt)
         # アドレスの検証
         _err, from_idx, to_idx = address_verification(addr_from, addr_to)
-        if _err
+        if _err && to_idx != -1
             _error()
             return
         end
@@ -120,7 +120,7 @@ class ED
         @current_line = to_idx.to_i # zero-based
 
         loop{
-            # 人間は1行目が1行目であると思っているので、予め人間に寄り添う
+            # 後挿入なので次の行に移動する
             to_idx += 1
 
             # 入力を受け付ける
