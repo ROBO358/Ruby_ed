@@ -61,12 +61,12 @@ class ED
     private def _eval(input)
         # 名前付きキャプチャのローカル変数への代入は式展開が存在すると仕様上行えないため、式展開を使用しない
         # addr = '(?:\d+|[.$,;]|\/.*\/)'
-        # cmnd = '(?:wq|[acdgijnpqrw=]|\z)'
+        # cmnd = '(?:wq|[acdfgijnpqrw=]|\z)'
         # prmt = '(?:.*)'
         # /\A(?:(?<addr_from>#{addr})(?:,(?<addr_to>#{addr}))?)?(?<cmnd>#{cmnd})(?<prmt>#{prmt})?\n\z/ =~ input
 
         # 名前付きキャプチャを使用し、各変数にデータを抽出する。
-        /\A(?:(?<addr_from>\d+|[.$,;]|\/.*\/)(?:,(?<addr_to>\d+|[.$,;]|\/.*\/))?)?(?<cmnd>wq|[acdgijnpqrw=]|\z)?(?<prmt>.*)?\n\z/ =~ input
+        /\A(?:(?<addr_from>\d+|[.$,;]|\/.*\/)(?:,(?<addr_to>\d+|[.$,;]|\/.*\/))?)?(?<cmnd>wq|[acdfgijnpqrw=]|\z)?(?<prmt>.*)?\n\z/ =~ input
 
         # コマンドを実行する
 
@@ -168,6 +168,16 @@ class ED
 
         # 現在の行を更新
         @current_line = @buffer.length - (to_idx - from_idx) - 1
+    end
+
+    # デフォルトのファイル名を変更する
+    private def _f(addr_from, addr_to, prompt)
+        if prompt.nil? || prompt.empty?
+            _print(@file_name.to_s + "\n")
+        else
+            prompt.strip!
+            @file_name = prompt
+        end
     end
 
     # 行番号ありで出力
