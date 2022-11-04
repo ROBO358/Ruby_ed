@@ -172,10 +172,15 @@ class ED
 
     # デフォルトのファイル名を変更する
     private def _f(addr_from, addr_to, prompt)
+        # promptの有無確認
         if prompt.nil? || prompt.empty?
+            # ファイル名を表示
             _print(@file_name.to_s + "\n")
         else
+            # 前後の空白等を削除
             prompt.strip!
+
+            # ファイル名を更新
             @file_name = prompt
         end
     end
