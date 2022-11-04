@@ -216,6 +216,43 @@ class ED
         end
     end
 
+    # 行の結合
+    private def _j(addr_from, addr_to, prompt)
+        # アドレスが指定されてなければ、現在行を対象とする
+        if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
+            addr_from = addr_to = '.' # 現在行
+        end
+
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # 指定された行が連続していなければ、次行と結合する
+        if from_idx == to_idx
+            to_idx += 1
+        end
+
+        # 結合する行を取得
+        lines = @buffer[from_idx..to_idx]
+
+        # 結合する行の末尾から改行を削除
+        lines.each_with_index {|line, idx|
+            line.chomp!("") if idx != lines.length - 1
+        }
+
+        # 結合する行を削除
+        @buffer.slice!(from_idx..to_idx)
+
+        # 結合する行を結合
+        @buffer.insert(from_idx, lines.join)
+
+        # 現在行を更新
+        @current_line = from_idx
+    end
+
     # 行番号ありで出力
     private def _n(addr_from, addr_to, prompt)
         print_buffer(addr_from, addr_to, true)
