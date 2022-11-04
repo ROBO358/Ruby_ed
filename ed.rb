@@ -135,6 +135,37 @@ class ED
             # 現在行を更新
             @current_line += 1
         }
+    end
+
+    # 前挿入
+    private def _i(addr_from, addr_to, prmt)
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # カレント行は入力する一つ前の行とする
+        @current_line = to_idx.to_i # zero-based
+
+        loop{
+            ## 前挿入なので一つ前の行にする
+            # 人間は1行目が1行目であると思っているので、予め人間に寄り添う
+            # to_idx += 1
+
+            # 入力を受け付ける
+            input = $stdin.gets
+
+            # 入力を終了する場合
+            break if input == ".\n"
+
+            # 入力を挿入
+            @buffer.insert(to_idx, input)
+
+            # 現在行を更新
+            @current_line += 1
+        }
 
     end
 
