@@ -329,6 +329,27 @@ class ED
         _q(addr_from, addr_to, prompt)
     end
 
+    # 現在行の表示
+    private def _=(addr_from, addr_to, prompt)
+        # アドレスが指定されてなければ、現在行を出力する
+        if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
+            # 人間のふりをする
+            _print((@current_line.to_i+1).to_s + "\n")
+            return
+        end
+
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # 指定行の出力
+        # 人間のふりをしている
+        _print((to_idx.to_i+1).to_s + "\n")
+    end
+
     #############################その他##########################
 
     # アドレスの有効性を検証
