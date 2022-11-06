@@ -86,7 +86,8 @@ class ED
             # 空行の場合、現在行を更新する
             update_current_line(addr_from, addr_to)
 
-        # 存在しないコマンドを呼び出さないように(インジェクションされそうなので)
+        # 存在しないコマンドを呼び出さないように
+        # 正規表現にて存在しないものは呼び出しできないが、人間は愚かなので編集忘れてインジェクションされそうなので
         elsif Command.include?(cmnd)
             # コマンドの実行
             self.send("_#{cmnd}", addr_from, addr_to, prmt)
