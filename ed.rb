@@ -32,9 +32,14 @@ class ED
 
         # ファイルが指定されていた場合、ファイルを開く
         if ARGV.length > 0
-            @file_name = ARGF.filename
-            @buffer = ARGF.readlines
-            @current_line = @buffer.length - 1 # zero-based
+            begin
+                @file_name = ARGF.filename
+                @buffer = ARGF.readlines
+                @current_line = @buffer.length - 1 # zero-based
+            rescue Errno::ENOENT => e
+                puts e.message
+                exit
+            end
         end
 
         loop {
