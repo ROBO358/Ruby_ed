@@ -320,6 +320,15 @@ class ED
         _print("#{write_size} characters written\n")
     end
 
+    # 保存して終了
+    private def _wq(addr_from, addr_to, prompt)
+        # 保存
+        _w(addr_from, addr_to, prompt)
+
+        # 終了
+        _q(addr_from, addr_to, prompt)
+    end
+
     #############################その他##########################
 
     # アドレスの有効性を検証
