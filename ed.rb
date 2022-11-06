@@ -278,6 +278,48 @@ class ED
         end
     end
 
+    # 保存
+    private def _w(addr_from, addr_to, prompt)
+        # アドレスが指定されてなければ、すべての行を対象とする
+        if (addr_from.nil? || addr_from.empty?) && (addr_to.nil? || addr_to.empty?)
+            addr_from = '1' # 1行目
+            addr_to = '$' # 最終行
+        end
+
+        # アドレスの検証
+        _err, from_idx, to_idx = address_verification(addr_from, addr_to)
+        if _err
+            _error()
+            return
+        end
+
+        # ファイル名が指定されていない場合は、デフォルトのファイル名を使用する
+        if prompt.nil? || prompt.empty?
+            prompt = @file_name
+        end
+
+        # ファイル名を取得
+        file_name = prompt.strip
+
+        # ファイルを開く
+        file = File.open(file_name, "w")
+
+        # 書き込む文字数
+        write_size = 0
+
+        # ファイルに書き込む
+        @buffer[from_idx..to_idx].each {|line|
+            file.write(line)
+            write_size += line.length
+        }
+
+        # ファイルを閉じる
+        file.close
+
+        # 書き込んだ文字数を表示
+        _print("#{write_size} characters written\n")
+    end
+
     #############################その他##########################
 
     # アドレスの有効性を検証
