@@ -73,14 +73,6 @@ class ED
         # 名前付きキャプチャを使用し、各変数にデータを抽出する。
         /\A(?:(?<addr_from>\d+|[.$,;]|\/.*\/)(?:,(?<addr_to>\d+|[.$,;]|\/.*\/))?)?(?<cmnd>wq|[acdfgijnpqrw=]|\z)?(?<prmt>.*)?\n\z/ =~ input
 
-        # コマンドを実行する
-
-        # Debug用解析結果
-        p addr_from
-        p addr_to
-        p cmnd
-        p prmt
-
         # コマンドが指定されていない場合
         if cmnd == ' ' || cmnd == '' || cmnd == nil
             # 空行の場合、現在行を更新する
